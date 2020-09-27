@@ -4,6 +4,9 @@ import hello.core.member.Grade;
 import hello.core.member.Member;
 import hello.core.member.MemberService;
 import hello.core.member.MemberServiceImpl;
+import hello.core.order.OrderService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class MemberApp {
 
@@ -13,9 +16,16 @@ public class MemberApp {
         //JUnit 테스트를 사용
 
         //MemberService memberService = new MemberServiceImpl();
+
         //AppConfig 통해서 주입
-        AppConfig appConfig = new AppConfig();
-        MemberService memberService = appConfig.memberService();
+        //AppConfig appConfig = new AppConfig();
+        //MemberService memberService = appConfig.memberService();
+
+        //스프링을 통해 주입
+        //ApplicationContext -> 스프링 컨테이너
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        MemberService memberService = applicationContext.getBean("memberService", MemberService.class);
+
         Member member = new Member(1L, "memberA", Grade.VIP);
         memberService.join(member);
 
