@@ -29,8 +29,11 @@ class ApplicationContextBasicFindTest {
         assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
     }
 
+    //스프링 빈에 등록된 인스턴스 타입을 보고 결정하기 때문에 구체적 타입도 찾을 수 있음
+    //구체적 타입으로 찾는 건 좋지 않음, 역할과 구현을 구분, 역할에 의존해야함 -> interface 형태로 찾는 것
+    //구체 타입으로 찾는 것 -> 구현에 의존
     @Test
-    @DisplayName("구체 타입으로 조회")  //반환타입이 아닌 스프링 빈에 등록된 인스턴스 타입을 보고 결정하기 때문에 구체적 타입도 찾을 수 있음
+    @DisplayName("구체 타입으로 조회")
     void findBeanByName2() {
         MemberServiceImpl memberService = ac.getBean("memberService", MemberServiceImpl.class);
         assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
