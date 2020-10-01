@@ -20,18 +20,45 @@ import org.springframework.context.annotation.Configuration;
 @Configuration  // 설정 정보
 public class AppConfig {
 
+    //@Bean memberService -> new MemoryMemberRepository()
+    //@Bean orderService -> new MemoryMemberRepository()
+    //2번 호출 -> 싱글톤이 깨지는거 아닌가??
+
+    //ConfigurationSingletonTest 의 configurationTest 실행시
+    //예상했던 call message
+    //call AppConfig.memberService
+    //call AppConfig.memberRepository
+    //call AppConfig.memberRepository
+    //call AppConfig.orderService
+    //call AppConfig.memberRepository
+
+    //실제 결과 call message
+    //call AppConfig.memberService
+    //call AppConfig.memberRepository
+    //call AppConfig.orderService
+
+    /**
+     * @Configuration 을 적용하지 않고, @Bean 만 적용하면 어떻게 될까
+     * CGLIB 기술 없이 순수한 AppConfig로 스프링 빈에 등록
+     * @Bean만 사용해도 스프링 빈으로 등록되지만, 싱글톤을 보장하지 않는다.
+     * 계속해서 new 키워드를 통해 instance 생성
+     */
+
     @Bean   //스프링 컨테이너에 스프링 빈으로 등록 -> 기본 메서드 이름으로 등록
     public MemberService memberService() {
+        System.out.println("call AppConfig.memberService");
         return new MemberServiceImpl(memberRepository());
     }
 
     @Bean
     public MemberRepository memberRepository() {
+        System.out.println("call AppConfig.memberRepository");
         return new MemoryMemberRepository();
     }
 
     @Bean
     public OrderService orderService() {
+        System.out.println("call AppConfig.orderService");
         return new OrderServiceImpl(memberRepository(), discountPolicy());
     }
 
