@@ -1,15 +1,19 @@
 package hello.core.order;
 
+import hello.core.annotation.MainDiscountPolicy;
 import hello.core.discount.DiscountPolicy;
 import hello.core.discount.FixDiscountPolicy;
 import hello.core.discount.RateDiscountPolicy;
 import hello.core.member.Member;
 import hello.core.member.MemberRepository;
 import hello.core.member.MemoryMemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
+//@RequiredArgsConstructor    //final 필드들의 생성자를 만들어줌, 실제 컴파일된 class 파일 통해 확인 가능
 public class OrderServiceImpl implements OrderService {
 
     /**
@@ -39,8 +43,16 @@ public class OrderServiceImpl implements OrderService {
     private final DiscountPolicy discountPolicy;
 
     //생성자를 통해서 주입
+    //생성자가 딱 1개만 있으면 @Autowired 를 생략해도 자동 주입생성자가 딱 1개만 있으면 @Autowired 를 생략해도 자동 주입
+
+    // 1. @Autowired 는 타입 매칭을 시도하고, 이때 여러 빈이 있으면 필드 이름, 파라미터 이름으로 빈 이름을 추가 매칭
+    // 2. @Qualifier 는 추가 구분자를 붙여주는 방법, 주입시 추가적인 방법을 제공하는 것이지 빈 이름을 변 경하는 것은 아님
+    // - 못찾으면 어떻게 될까? 그러면 mainDiscountPolicy 이름의 스프링 빈을 추가로 찾음
+    // - 하지만 @Qualifier 는 @Qualifier 를 찾는 용도로만 사용하는게 명확하고 좋음
+    // - @Qualifier 끼리 매칭 -> 빈 이름 매칭 -> NoSuchBeanDefinitionException 예외 발생
+    // 3. @Primary 는 우선순위를 정하는 방법으로 @Autowired 시에 여러 빈 매칭되면 @Primary 가 우선권을 가지도록 함
     @Autowired
-    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+    public OrderServiceImpl(MemberRepository memberRepository, /*@Qualifier("mainDiscountPolicy")*/ @MainDiscountPolicy DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
     }
